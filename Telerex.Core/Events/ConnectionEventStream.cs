@@ -4,6 +4,7 @@ using System.Linq;
 using System.Reactive.Subjects;
 using System.Text;
 using System.Threading.Tasks;
+using Telerex.Core.RTTI;
 
 namespace Telerex.Core.Events
 {
@@ -22,7 +23,7 @@ namespace Telerex.Core.Events
         var downstramEvent = new DownstreamNetworkEvent<object>
         {
           Connection = _connection,
-          Payload = Encoding.ASCII.GetString(message.Data)
+          Payload = Serializer.DeSerialize(message.Data)
         };
         _downstreamSubject.OnNext(downstramEvent);
         TelerexGrandCentral.EventStream.DownstreamSubject.OnNext(downstramEvent);
@@ -46,7 +47,7 @@ namespace Telerex.Core.Events
 
     public void OnNext(UpstreamNetworkEvent<object> value)
     {
-      _connection.TcpConnection.OnNext(Encoding.ASCII.GetBytes((string) value.Payload));
+      _connection.TcpConnection.OnNext(Serializer.Serialize(value.Payload));
     }
   }
 }

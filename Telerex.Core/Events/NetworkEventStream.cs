@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Reactive.Subjects;
 
@@ -40,8 +41,12 @@ namespace Telerex.Core.Events
     }
 
     public void OnNext<T>(UpstreamNetworkEvent<T> value)
-    {
-      throw new NotImplementedException();
-    }
+      => OnNext(new UpstreamNetworkEvent<object> {ConnectionFilter = value.ConnectionFilter, Payload = value.Payload});
+
+    public void OnNext<T>(T value)
+      => OnNext(new UpstreamNetworkEvent<T> {ConnectionFilter = TelerexGrandCentral.Connections, Payload = value});
+
+    public void OnNext<T>(IEnumerable<Connection> connectionFilter, T value)
+      => OnNext(new UpstreamNetworkEvent<T> {ConnectionFilter = connectionFilter, Payload = value});
   }
 }
